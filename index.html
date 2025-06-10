@@ -2,31 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sachecaft</title>
+  <title>Sachecaft - Sache Orb Demo</title>
   <style>
-    body { background: #222; color: #fff; margin: 0; font-family: sans-serif; }
-    #gameCanvas { background: #444; display: block; margin: 20px auto; }
+    body { background: #181818; color: #fff; font-family: sans-serif; margin: 0; }
     h1 { text-align: center; }
-    #status { text-align: center; }
+    #gameCanvas { display: block; margin: 20px auto; background: #444; border: 2px solid #fff;}
+    #status, #inventory { text-align: center; margin: 0.5em;}
+    .inv-btn { margin: 0 4px; padding: 6px 15px; border-radius: 4px; border: none; background: #333; color: #fff; cursor: pointer;}
+    .inv-btn.selected { background: #6a3cff;}
   </style>
 </head>
 <body>
-  <h1>Sachecaft</h1>
+  <h1>Sachecaft - Sache Orb Demo</h1>
+  <div id="inventory"></div>
   <canvas id="gameCanvas" width="640" height="480"></canvas>
-  <div id="status">Loading...</div>
-  <script src="main.js"></script>
-  <div id="controls">
-    <button onclick="setBlockType(0)">Sache Block</button>
-    <button onclick="setBlockType(1)">Sache Grass</button>
-    <button onclick="setBlockType(2)">Sache Ore</button>
-    <button onclick="setBlockType(3)">Mystery Block</button>
-  </div>
-  <canvas id="gameCanvas" width="640" height="480"></canvas>
-  <div id="status">Loading...</div>
-  <script src="main.js"></script>
- <div id="inv"></div>
-  <canvas id="gameCanvas" width="640" height="480"></canvas>
-  <div id="status">W/A/S/D or arrows = move, Space = jump, 1-4 = select block, LMB = place, RMB = break</div>
+  <div id="status">Use arrow keys/WASD to move, space to jump. Click to place, Shift+Click to break. Right click with Sache Orb to explode. Number keys to switch block type.</div>
   <script src="main.js"></script>
 </body>
 </html>
