@@ -12,7 +12,6 @@ const BLOCKS = [
 let wasmInstance;
 let selectedBlock = 0;
 let keys = {};
-let lastRender = 0;
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -51,20 +50,17 @@ function drawWorld() {
   ctx.strokeRect(px * TILE_SIZE + 6, py * TILE_SIZE + 6, TILE_SIZE - 12, TILE_SIZE - 12);
 }
 
-function gameLoop(ts) {
+function gameLoop() {
   if (!wasmInstance) return;
-  // Movement input
   let left = keys["ArrowLeft"] || keys["a"];
   let right = keys["ArrowRight"] || keys["d"];
-  let up = keys["ArrowUp"] || keys["w"];
-  let down = keys["ArrowDown"] || keys["s"];
   if (left) wasmInstance.exports.move_player(-1, 0);
   if (right) wasmInstance.exports.move_player(1, 0);
-  // Jumping (space bar)
+  // Jumping
   if (keys[" "] && wasmInstance.exports.can_jump()) {
     wasmInstance.exports.jump();
   }
-  // Gravity/tick (runs every frame)
+  // Gravity/tick
   wasmInstance.exports.tick();
   drawWorld();
   requestAnimationFrame(gameLoop);
@@ -109,7 +105,7 @@ window.addEventListener('keyup', e => {
 });
 
 async function loadWasm() {
-  const resp = await fetch('sache_full.wasm');
+  const resp = await fetch('sache_ultimate.wasm');
   const bytes = await resp.arrayBuffer();
   const { instance } = await WebAssembly.instantiate(bytes, {env:{}});
   wasmInstance = instance;
