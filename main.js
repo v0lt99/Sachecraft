@@ -115,4 +115,84 @@ async function loadWasm() {
   requestAnimationFrame(gameLoop);
 }
 
-loadWasm();
+// ... (all your previous code above)
+
+let activeOrb = null; // {x, y, dx, dy, targetX, targetY}
+
+function shootOrb(targetX, targetY) {
+  // Player position (center of player tile)
+  let px = wasmInstance.exports.get_player_x() + 0.5;
+  let py = wasmInstance.exports.get_player_y() + 0.5;
+  // Direction vector
+  let dx = targetX + 0.5 - px;
+  let dy = targetY + 0.5 - py;
+  let dist = Math.sqrt(dx * dx + dy * dy);
+  dx /= dist; dy /= dist;
+  let speed = 0.5; // tiles per frame
+  activeOrb = {x: px, y: py, dx: dx * speed, dy: dy * speed, targetX, targetY};
+}
+
+function updateOrb() {
+  if (!activeOrb) return;
+  // Move orb
+  activeOrb.x += activeOrb.dx;
+  activeOrb.y += activeOrb.dy;
+  // Check if reached or passed target
+  let tx = activeOrb.targetX + 0.5, ty = activeOrb.targetY + 0.5;
+  let prev = Math.hypot(activeOrb.x - tx, activeOrb.y - ty);
+  if (prev < 0.6) {
+    // Explode in WASM
+    wasmInstance.exports.explode(activeOrb.targetX, activeOrb.targetY);
+    activeOrb = null;
+    drawWorld();
+  }
+}
+
+function drawWorld() {
+  // ... (your existing code for drawing blocks and player)
+  // Draw orb if it's active
+  if (activeOrb) {
+    ctx.beginPath();
+    ctx.arc(activeOrb.x * TILE_SIZE, activeOrb.y * TILE_SIZE, TILE_SIZE / 3, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ff44ee";
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  }
+}
+
+// Replace canvas mousedown handler:
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = Math.floor((e.clientX - rect.left) / TILE_SIZE);
+  const my = Math.floor((e.clientY - rect.top) / TILE_SIZE);
+  if (mx >= 0 && mx < GRID_W && my >= 0 && my < GRID_H) {
+    if (e.button === 2 && selectedBlock === 4) {
+      // Sache Orb right-click: shoot orb toward (mx, my)
+      if (!activeOrb) shootOrb(mx, my);
+    } else if (e.shiftKey) {
+      breakBlock(mx, my);
+    } else if (e.button === 0 && selectedBlock !== 4) {
+      placeBlock(mx, my, selectedBlock);
+    }
+  }
+});
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+// In your game loop, call updateOrb() before drawWorld():
+function gameLoop() {
+  if (!wasmInstance) return;
+  let left = keys["ArrowLeft"] || keys["a"];
+  let right = keys["ArrowRight"] || keys["d"];
+  if (left) wasmInstance.exports.move_player(-1, 0);
+  if (right) wasmInstance.exports.move_player(1, 0);
+  if (keys[" "] && wasmInstance.exports.can_jump()) {
+    wasmInstance.exports.jump();
+  }
+  wasmInstance.exports.tick();
+  updateOrb();
+  drawWorld();
+  requestAnimationFrame(gameLoop);
+}
+
+loadWasm()
