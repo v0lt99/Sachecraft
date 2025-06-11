@@ -274,5 +274,6 @@ function gameLoop() {
   drawWorld();
   requestAnimationFrame(gameLoop);
 }
+const resp = await fetch('sache_ultimate.wasm'); // or sache_orb.wasm, etc.
 
 loadWasm()
