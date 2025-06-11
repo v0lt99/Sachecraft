@@ -10,6 +10,17 @@
     #status, #inventory { text-align: center; margin: 0.5em;}
     .inv-btn { margin: 0 4px; padding: 6px 15px; border-radius: 4px; border: none; background: #333; color: #fff; cursor: pointer;}
     .inv-btn.selected { background: #6a3cff;}
+     body { background: #181818; }
+    #gameCanvas { display: block; margin: 20px auto; background: #444; border: 2px solid #fff;}
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="640" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#6a3cff";
+    ctx.fillRect(50, 50, 200, 100);
   </style>
 </head>
 <body>
